@@ -1,7 +1,7 @@
 package page;
 
 
-public class IndexPage {
+public class IndexPage extends POBasePage {
 
 
 }

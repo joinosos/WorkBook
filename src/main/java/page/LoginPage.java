@@ -1,14 +1,6 @@
 package page;
 
-import org.openqa.selenium.Cookie;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-
-public class LoginPage  {
+public class LoginPage extends POBasePage {
 
     private String url = "https://work.weixin.qq.com/wework_admin/frame";
 

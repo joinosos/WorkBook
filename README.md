@@ -1,7 +1,7 @@
 ### chromedriver mapper
     https://raw.githubusercontent.com/appium/appium-chromedriver/master/config/mapping.json
 ### ObjectMapper
-    https://github.com/FasterXML/jackson-dataformats-text/tree/master/yaml
+    ç
 ### junit5
     https://junit.org/junit5/docs/current/user-guide
 ### chromedriver 下载

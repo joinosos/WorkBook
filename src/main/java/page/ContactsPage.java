@@ -1,5 +1,5 @@
 package page;
 
-public class ContactsPage {
+public class ContactsPage extends POBasePage {
 
 }
