@@ -1,82 +1,130 @@
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import javabean.ContactBean;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import page.ContactsPage;
+import page.LoginPage;
+import page.POBasePage;
 
 import java.io.File;
-import java.util.HashMap;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WechatTest {
-    static WebDriver webDriver;
+    //驱动
+    public static String driver_path="driver/chromedriver_mac";
+    private static boolean isFirst = true;
+    private static ContactsPage contactsPage=null;
+    public  static POBasePage poBasePage = new POBasePage();
+    //断言
+    private List<Executable> executableList = new ArrayList<>();
     @BeforeAll
-    public static void init(){
-//        System.setProperty("webdriver.chrome.driver", "/Users/ashin/work/devruntime/chromedriver/89.0.4389/chromedriver");
-        webDriver=new ChromeDriver();
-        webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+    public static void beforeTest(){
+       POBasePage.init(driver_path);
     }
 
     @AfterAll
     public static void tearDown(){
-//        webDriver.quit();
+        poBasePage.quit();
     }
 
-
+    /**
+     * 获取微信登录CooKie
+     */
     @Test
-    public void saveCookie(){
-        try {
-            webDriver.get("https://work.weixin.qq.com/wework_admin/frame");
-            Thread.sleep(10000);
-            Set<Cookie> cookies = webDriver.manage().getCookies();
-            webDriver.navigate().refresh();
-            ObjectMapper objectMapper=new ObjectMapper(new YAMLFactory());
-            //todo: 使用getResource代替
-            objectMapper.writeValue(new File("cookie.yaml"),cookies);
-            cookies.forEach(cookie-> System.out.println(cookie.getName()+":"+cookie.getValue()));
+    void getCookie() {
+        new LoginPage().saveCookie();
+    }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+    /**
+     * 部门的添加及删除 参数化
+     * @param departName
+     */
+    @ParameterizedTest()
+    @ValueSource(strings = {"depart1612835760","depart1611834760","depart1613833760"})
+    void addDepartmentResult(String departName) {
+        System.out.println("参数："+departName);
+        if(isFirst) {
+            contactsPage = new LoginPage().loginCookie().addMember();
+            isFirst = false;
+        }
+        String result = contactsPage.addDepartment(departName).searchDepartment(departName);
+        assertEquals(departName, result);
+        poBasePage.refresh();
+        contactsPage.delDepartment(departName);
+        poBasePage.refresh();
+    }
+
+    /**
+     * 添加标签 参数化
+     * @param departName
+     */
+    @ParameterizedTest()
+    @ValueSource(strings = {"label1612835760","label1611834760","label1613833760"})
+    void addLabelResult(String departName) {
+        System.out.println("参数："+departName);
+        if(isFirst) {
+            contactsPage = new LoginPage().loginCookie().menContacts();
+            isFirst = false;
+        }
+        String result = contactsPage.addLabel(departName).searchLabel(departName);
+        assertEquals(departName, result);
+        poBasePage.refresh();
+        contactsPage.delLabel(departName);
+        poBasePage.refresh();
+    }
+
+    /**
+     * 添加成员验证账号、姓名、手机号等字段
+     * @param contactBean
+     */
+    @ParameterizedTest()
+    @MethodSource()
+//    @Ignore
+    void addContactResult(ContactBean contactBean) {
+        System.out.println("参数："+contactBean.toString());
+        String userName = contactBean.getUserName();
+        String accountName = contactBean.getAccountName();
+        String phoneNumber = contactBean.getPhoneNumber();
+        System.out.println(contactBean.toString());
+        if(isFirst) {
+            contactsPage = new LoginPage().loginCookie().menContacts();
+            isFirst = false;
+        }
+        String result =contactsPage.addContactBut().addContact(userName, accountName, phoneNumber).searchContact(accountName);
+        if(!result.equals("")) {
+            String finalResult  = result.substring(result.indexOf("：") + 1);
+            executableList.add(()->assertEquals(accountName, finalResult));
+        }else {
+            String finalResult = result;
+            executableList.add(()->assertEquals(accountName, finalResult));
         }
 
     }
 
-
-    @Test
-    public void loginTest(){
+    /**
+     * 读取账号配置参数
+     * @return
+     */
+    static List<ContactBean> addContactResult(){
         try {
-            webDriver.get("https://work.weixin.qq.com/wework_admin/frame");
-
-            ObjectMapper objectMapper=new ObjectMapper(new YAMLFactory());
-            TypeReference<List<HashMap<String, Object>>> typeReference=new TypeReference<List<HashMap<String, Object>>>(){};
-           List<HashMap<String, Object>> cookies = objectMapper.readValue(new File("cookie.yaml"), typeReference);
-           cookies.forEach(cookie->{
-               webDriver.manage().addCookie(new Cookie(cookie.get("name").toString(),cookie.get("value").toString()));
-           });
-
-            webDriver.navigate().refresh();
-
-            webDriver.findElement(By.id("menu_contacts")).click();
-            webDriver.findElement(By.id("memberSearchInput")).sendKeys("霍格沃兹");
-            webDriver.findElements(By.id("search_party_list")).get(0).click();
-            webDriver.findElements(By.cssSelector(".js_add_member")).get(0).click();
-
-
-
-//           Thread.sleep(10000);
-        } catch (Exception e) {
+            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            TypeReference<List<ContactBean>> typeReference = new TypeReference<List<ContactBean>>() {};
+            return mapper.readValue(new File("src/main/resources/contacts.yaml"),typeReference);
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
-
-
-
 
 }
