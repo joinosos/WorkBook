@@ -1,4 +1,4 @@
-package javabean;
+package web_po.javabean;
 
 public class ContactBean {
     private String userName;

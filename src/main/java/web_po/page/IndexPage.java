@@ -1,4 +1,4 @@
-package page;
+package web_po.page;
 
 
 public class IndexPage extends POBasePage {

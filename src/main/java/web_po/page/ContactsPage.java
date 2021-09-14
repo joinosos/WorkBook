@@ -1,4 +1,4 @@
-package page;
+package web_po.page;
 
 import org.openqa.selenium.WebElement;
 

@@ -1,4 +1,4 @@
-package page;
+package web_po.page;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,7 +25,7 @@ public class LoginPage extends POBasePage {
             Set<Cookie> cookies = driver.manage().getCookies();
             cookies.forEach(cookie -> System.out.println(cookie.getName() + " " + cookie.getValue()));
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            mapper.writeValue(new File("src/main/resources/cookie.yaml"), cookies);
+            mapper.writeValue(new File("src/main/resources/web_po/cookie.yaml"), cookies);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,7 +39,7 @@ public class LoginPage extends POBasePage {
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
             TypeReference<List<HashMap<String, Object>>> typeReference = new TypeReference<List<HashMap<String, Object>>>() {
             };
-            List<HashMap<String, Object>> cookies = mapper.readValue(new File("src/main/resources/cookie.yaml"), typeReference);
+            List<HashMap<String, Object>> cookies = mapper.readValue(new File("src/main/resources/web_po/cookie.yaml"), typeReference);
             cookies.forEach(cookie -> {
                 driver.manage().addCookie(new Cookie(cookie.get("name").toString(), cookie.get("value").toString()));
             });

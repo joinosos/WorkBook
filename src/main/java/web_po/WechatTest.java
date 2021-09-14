@@ -1,7 +1,9 @@
+package web_po;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import javabean.ContactBean;
+import web_po.javabean.ContactBean;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -9,9 +11,9 @@ import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import page.ContactsPage;
-import page.LoginPage;
-import page.POBasePage;
+import web_po.page.ContactsPage;
+import web_po.page.LoginPage;
+import web_po.page.POBasePage;
 
 import java.io.File;
 import java.io.IOException;
