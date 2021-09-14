@@ -13,5 +13,7 @@
     chrome://inspect/#devices
 ### hamcrest
      http://hamcrest.org/JavaHamcrest
-### uiscrollable 滚动
+### UiScrollable 滚动
     https://appium.io/docs/en/writing-running-appium/tutorial/swipe/android-simple/#android-uiscrollable-swipe-simple-example
+### rest-assured  接口
+    https://mvnrepository.com/artifact/io.rest-assured/rest-assured
